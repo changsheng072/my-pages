@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H漫生成控制台</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<style>
+  :root {
+    --bg-dark: #0f1115;
+    --bg-card: rgba(26, 27, 36, 0.85);
+    --color-primary: #ff5274;
+    --color-primary-glow: rgba(255, 82, 116, 0.4);
+    --color-text-main: #e2e8f0;
+    --color-text-muted: #718096;
+    --border-line: rgba(74, 81, 88, 0.6);
+    --radius-md: 8px;
+    --radius-lg: 16px;
+  }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-dark);
+    background-image: radial-gradient(circle at 50% 0%, var(--bg-dark), #000);
+    color: var(--color-text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  #app {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .title {
+    font-size: 24px;
+    color: var(--color-primary);
+    text-shadow: 0 0 10px var(--color-primary-glow);
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .progress-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--border-line);
+    z-index: 1;
+  }
+
+  .step-indicator {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--bg-dark);
+    border: 2px solid var(--border-line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    z-index: 2;
+    color: var(--color-text-muted);
+    transition: all 0.3s ease;
+  }
+  .step-indicator.active {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    box-shadow: 0 0 10px var(--color-primary-glow);
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-line);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .section-title {
+    font-size: 16px;
+    color: var(--color-text-main);
+    margin-bottom: 15px;
+    border-bottom: 1px dashed var(--border-line);
+    padding-bottom: 5px;
+  }
+
+  .tag-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .tag {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border-line);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+
+  .tag:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  .tag.selected {
+    background: var(--color-primary-glow);
+    border-color: var(--color-primary);
+    color: #fff;
+  }
+
+  .custom-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border-line);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: var(--radius-md);
+    outline: none;
+  }
+  input[type="text"]:focus {
+    border-color: var(--color-primary);
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--color-primary);
+    color: #fff;
+  }
+  .btn-primary:hover:not(:disabled) {
+    box-shadow: 0 0 15px var(--color-primary-glow);
+  }
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-line);
+    color: var(--color-text-main);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .footer-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  /* 第五页专属样式 */
+  .summary-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: rgba(0,0,0,0.2);
+    border-radius: var(--radius-md);
+  }
+  .summary-label { color: var(--color-text-muted); }
+  .summary-value { color: var(--color-primary); font-weight: bold; text-align: right; max-width: 60%; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="header">
+    <h1 class="title">H-Manga Generator</h1>
+    <div style="color: var(--color-text-muted); font-size: 12px;">构建你的专属分镜剧本</div>
+  </div>
+
+  <div class="progress-bar">
+    <div v-for="step in 5" :key="step" class="step-indicator" :class="{ active: currentStep >= step }">
+      {{ step }}
+    </div>
+  </div>
+
+  <div class="card">
+    <!-- 页面 1：角色 -->
+    <div v-if="currentStep === 1">
+      <div class="section-title">Step 1: 核心角色设定</div>
+      <div class="tag-grid">
+        <div v-for="item in db.roles" :key="item"
+             class="tag" :class="{ selected: settings.role === item }"
+             @click="settings.role = item; customInputs.role = ''">
+          {{ item }}
+        </div>
+      </div>
+      <div class="custom-input-group">
+        <input type="text" v-model="customInputs.role" placeholder="自定义角色 (例如: 魅魔双子, 傲娇大小姐...)" @input="settings.role = customInputs.role">
+      </div>
+    </div>
+
+    <!-- 页面 2：故事 -->
+    <div v-if="currentStep === 2">
+      <div class="section-title">Step 2: 故事背景/桥段</div>
+      <div class="tag-grid">
+        <div v-for="item in db.stories" :key="item"
+             class="tag" :class="{ selected: settings.story === item }"
+             @click="settings.story = item; customInputs.story = ''">
+          {{ item }}
+        </div>
+      </div>
+      <div class="custom-input-group">
+        <input type="text" v-model="customInputs.story" placeholder="自定义故事 (例如: 异世界战败被俘...)" @input="settings.story = customInputs.story">
+      </div>
+    </div>
+
+    <!-- 页面 3：服装 (支持多选) -->
+    <div v-if="currentStep === 3">
+      <div class="section-title">Step 3: 服装与配饰 (可多选)</div>
+      <div class="tag-grid">
+        <div v-for="item in db.clothing" :key="item"
+             class="tag" :class="{ selected: settings.clothing.includes(item) }"
+             @click="toggleClothing(item)">
+          {{ item }}
+        </div>
+      </div>
+      <div class="custom-input-group">
+        <input type="text" v-model="customInputs.clothingItem" placeholder="添加自定义服装" @keyup.enter="addCustomClothing">
+        <button class="btn btn-secondary" @click="addCustomClothing">添加</button>
+      </div>
+    </div>
+
+    <!-- 页面 4：张数与规格 -->
+    <div v-if="currentStep === 4">
+      <div class="section-title">Step 4: 规格与张数</div>
+      <div class="tag-grid">
+        <div v-for="item in db.pages" :key="item"
+             class="tag" :class="{ selected: settings.pages === item }"
+             @click="settings.pages = item; customInputs.pages = ''">
+          {{ item }}
+        </div>
+      </div>
+      <div class="custom-input-group">
+        <input type="text" v-model="customInputs.pages" placeholder="自定义篇幅 (例如: 30页全彩CG...)" @input="settings.pages = customInputs.pages">
+      </div>
+    </div>
+
+    <!-- 页面 5：确认 -->
+    <div v-if="currentStep === 5">
+      <div class="section-title">Step 5: 最终确认</div>
+
+      <div class="summary-line">
+        <span class="summary-label">核心角色</span>
+        <span class="summary-value">{{ settings.role || '未指定' }}</span>
+      </div>
+      <div class="summary-line">
+        <span class="summary-label">故事桥段</span>
+        <span class="summary-value">{{ settings.story || '未指定' }}</span>
+      </div>
+      <div class="summary-line">
+        <span class="summary-label">服装设定</span>
+        <span class="summary-value">{{ settings.clothing.length ? settings.clothing.join(', ') : '全裸/未指定' }}</span>
+      </div>
+      <div class="summary-line">
+        <span class="summary-label">规格篇幅</span>
+        <span class="summary-value">{{ settings.pages || '未指定' }}</span>
+      </div>
+
+      <div style="margin-top: 15px; font-size: 12px; color: var(--color-text-muted); text-align: center;">
+        点击下方"开始生成"将锁定配置文件并启动引擎。
+      </div>
+    </div>
+
+    <!-- 底部控制按钮 -->
+    <div class="footer-actions">
+      <button class="btn btn-secondary" @click="prevStep" :disabled="currentStep === 1">返回</button>
+      <button class="btn btn-primary" @click="nextStep" v-if="currentStep < 5" :disabled="!isStepComplete(currentStep)">下一步</button>
+      <button class="btn btn-primary" @click="submit" v-if="currentStep === 5">开始生成</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const { createApp, reactive, ref } = Vue
+
+  createApp({
+    setup() {
+      const currentStep = ref(1)
+
+      // 预设词库
+      const db = {
+        roles: ['青梅竹马', '冷酷女上司', '战斗修女', '魔法少女', '魅魔', '人妻邻居', '无口三无少女', '女仆', '黑帮大小姐'],
+        stories: ['催眠常识修改', '隐秘的办公室恋情', '时间停止', '被发现秘密的威胁', '异世界转生开后宫', '密室逃脱惩罚', '合租室友的意外'],
+        clothing: ['水手服', '死库水', '连裤黑丝', '女仆装', '护士服', '兔女郎', '开裆紧身衣', '微透白衬衫', '项圈', '贞操带'],
+        pages: ['单张精美CG', '4格小剧场', '8页短篇', '16页标准本', '32页全彩大长篇']
+      }
+
+      // 用户选择的数据
+      const settings = reactive({
+        role: '',
+        story: '',
+        clothing: [],
+        pages: ''
+      })
+
+      // 自定义输入暂存
+      const customInputs = reactive({
+        role: '',
+        story: '',
+        clothingItem: '',
+        pages: ''
+      })
+
+      // 切换服装状态（多选）
+      const toggleClothing = (item) => {
+        const index = settings.clothing.indexOf(item)
+        if (index > -1) {
+          settings.clothing.splice(index, 1)
+        } else {
+          settings.clothing.push(item)
+        }
+      }
+
+      // 添加自定义服装
+      const addCustomClothing = () => {
+        const val = customInputs.clothingItem.trim()
+        if (val && !settings.clothing.includes(val)) {
+          settings.clothing.push(val)
+        }
+        customInputs.clothingItem = ''
+      }
+
+      // 简单校验当前步是否完成（必须选一个）
+      const isStepComplete = (step) => {
+        if (step === 1) return !!settings.role
+        if (step === 2) return !!settings.story
+        if (step === 3) return true // 服装允许不选（裸）
+        if (step === 4) return !!settings.pages
+        return true
+      }
+
+      const nextStep = () => {
+        if (currentStep.value < 5) currentStep.value++
+      }
+
+      const prevStep = () => {
+        if (currentStep.value > 1) currentStep.value--
+      }
+
+            const submit = () => {
+        // 拼接用户输入的信息
+        const finalRole = customInputs.role.trim() || settings.role || '未指定';
+        const finalStory = customInputs.story.trim() || settings.story || '未指定';
+        const finalClothing = settings.clothing.length > 0 ? settings.clothing.join(', ') : '全裸/未指定';
+        const finalPages = customInputs.pages.trim() || settings.pages || '未指定';
+
+        const promptText =
+`H漫分镜生成配置：
+【核心角色】: ${finalRole}
+【故事桥段】: ${finalStory}
+【服装设定】: ${finalClothing}
+【规格篇幅】: ${finalPages}
+
+请根据以上配置，以该设定的视角开启剧情。`;
+
+        // 仿照示例代码，通过类似 Tavern 的扩展斜杠命令发送
+        // 假设运行环境中有 triggerSlash 函数，如没有则提供一个后备的 alert 显示
+        try {
+          if (typeof triggerSlash === 'function') {
+            triggerSlash(`/send ${promptText}|/trigger`);
+          } else {
+             // 独立测试时的展示效果
+             alert("将要发送到对话框的设定内容：\n\n" + promptText);
+             console.log("最终发送的内容:\n", promptText);
+          }
+        } catch (error) {
+          console.error('发送设定失败:', error);
+          alert("模拟发送：\n\n" + promptText);
+        }
+      }
+
+
+      return {
+        currentStep,
+        db,
+        settings,
+        customInputs,
+        toggleClothing,
+        addCustomClothing,
+        isStepComplete,
+        nextStep,
+        prevStep,
+        submit
+      }
+    }
+  }).mount('#app')
+</script>
+</body>
+</html>
