@@ -20,13 +20,12 @@
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    /* 取消了 overflow: hidden，让原本的容器正常释放高度 */
   }
 
-  /* 遮罩层：取消 position: fixed，赋予硬性高度以撑大对话视窗 */
+  /* 修复后的高度撑开视窗方案 */
   .modal-mask {
     width: 100%;
-    min-height: 700px; /* ✨ 在这里调整高度，觉得不够大可以改成 800px 或 900px */
+    min-height: 800px; /* 强制要求最小高度 */
     background: var(--bg-card);
     box-sizing: border-box;
     display: flex;
@@ -35,23 +34,14 @@
     overflow-y: auto;
   }
 
-  /* 定制深色滚动条 */
-  .modal-mask::-webkit-scrollbar {
-    width: 10px;
-  }
-  .modal-mask::-webkit-scrollbar-track {
-    background: rgba(15, 15, 20, 0.8);
-  }
-  .modal-mask::-webkit-scrollbar-thumb {
-    background: rgba(74, 81, 88, 0.8);
-    border-radius: var(--radius-lg);
-  }
+  .modal-mask::-webkit-scrollbar { width: 10px; }
+  .modal-mask::-webkit-scrollbar-track { background: rgba(15, 15, 20, 0.8); }
+  .modal-mask::-webkit-scrollbar-thumb { background: rgba(74, 81, 88, 0.8); border-radius: var(--radius-lg); }
 
-  /* 内容容器：取消100vh，改为100%自身撑开 */
   .modal-card {
     width: 100%;
     max-width: 900px;
-    min-height: 100%; /* 改成100%适应 mask 的高度 */
+    min-height: 100%;
     padding: 30px 20px 60px 20px;
     box-sizing: border-box;
     display: flex;
@@ -59,10 +49,7 @@
     color: var(--color-text-main);
   }
 
-  .header {
-    text-align: center;
-    margin-bottom: 30px;
-  }
+  .header { text-align: center; margin-bottom: 30px; }
 
   .title {
     font-size: 26px;
@@ -78,7 +65,7 @@
     justify-content: space-between;
     margin-bottom: 30px;
     position: relative;
-    max-width: 600px;
+    max-width: 700px;
     margin-left: auto;
     margin-right: auto;
     width: 100%;
@@ -116,11 +103,7 @@
     box-shadow: 0 0 12px var(--color-primary-glow);
   }
 
-  /* 核心配置区域占满余下空间，将按钮挤到底部 */
-  .section {
-    flex: 1;
-    animation: fadeIn 0.3s ease;
-  }
+  .section { flex: 1; animation: fadeIn 0.3s ease; }
 
   .section-title {
     font-size: 18px;
@@ -131,12 +114,7 @@
     padding-bottom: 10px;
   }
 
-  .tag-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 25px;
-  }
+  .tag-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 25px; }
 
   .tag {
     padding: 10px 20px;
@@ -148,23 +126,10 @@
     font-size: 15px;
     transition: all 0.2s;
   }
+  .tag:hover { border-color: var(--color-text-muted); background: rgba(255,255,255,0.05); }
+  .tag.selected { background: var(--color-primary-glow); border-color: var(--color-primary); color: #fff; }
 
-  .tag:hover {
-    border-color: var(--color-text-muted);
-    background: rgba(255,255,255,0.05);
-  }
-
-  .tag.selected {
-    background: var(--color-primary-glow);
-    border-color: var(--color-primary);
-    color: #fff;
-  }
-
-  .custom-input-group {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 25px;
-  }
+  .custom-input-group { display: flex; gap: 12px; margin-bottom: 25px; }
 
   input[type="text"] {
     flex: 1;
@@ -178,10 +143,7 @@
     box-sizing: border-box;
     transition: border-color 0.2s;
   }
-  input[type="text"]:focus {
-    border-color: var(--color-primary);
-    box-shadow: inset 0 0 0 1px var(--color-primary-glow);
-  }
+  input[type="text"]:focus { border-color: var(--color-primary); box-shadow: inset 0 0 0 1px var(--color-primary-glow); }
 
   .btn {
     padding: 14px 28px;
@@ -193,28 +155,11 @@
     transition: all 0.2s;
   }
 
-  .btn-primary {
-    background: var(--color-primary);
-    color: #fff;
-    min-width: 150px;
-  }
-  .btn-primary:hover:not(:disabled) {
-    box-shadow: 0 0 20px var(--color-primary-glow);
-    transform: translateY(-2px);
-  }
-  .btn-secondary {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--border-line);
-    color: var(--color-text-main);
-  }
-  .btn-secondary:hover:not(:disabled) {
-    border-color: var(--color-text-main);
-    background: rgba(255, 255, 255, 0.1);
-  }
-  .btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
+  .btn-primary { background: var(--color-primary); color: #fff; min-width: 150px; }
+  .btn-primary:hover:not(:disabled) { box-shadow: 0 0 20px var(--color-primary-glow); transform: translateY(-2px); }
+  .btn-secondary { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-line); color: var(--color-text-main); }
+  .btn-secondary:hover:not(:disabled) { border-color: var(--color-text-main); background: rgba(255, 255, 255, 0.1); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .footer-actions {
     display: flex;
@@ -247,9 +192,7 @@
 <body>
 
 <div id="app">
-  <!-- 完全贴合视口的背景层 -->
   <div class="modal-mask">
-    <!-- 内部容器，限制最大宽度提升阅读体验 -->
     <div class="modal-card">
 
       <div class="header">
@@ -257,8 +200,9 @@
         <div style="color: var(--color-text-muted); font-size: 14px;">构建你的专属分镜剧本</div>
       </div>
 
+      <!-- 更新为 6 个步骤 -->
       <div class="progress-bar">
-        <div v-for="step in 5" :key="step" class="step-indicator" :class="{ active: currentStep >= step }">
+        <div v-for="step in 6" :key="step" class="step-indicator" :class="{ active: currentStep >= step }">
           {{ step }}
         </div>
       </div>
@@ -278,9 +222,24 @@
         </div>
       </div>
 
-      <!-- 页面 2：故事 -->
+      <!-- 🌟新增 页面 2：性格 -->
       <div class="section" v-if="currentStep === 2">
-        <div class="section-title">Step 2: 故事背景/桥段</div>
+        <div class="section-title">Step 2: 人物性格设定</div>
+        <div class="tag-grid">
+          <div v-for="item in db.personalities" :key="item"
+               class="tag" :class="{ selected: settings.personality === item }"
+               @click="settings.personality = item; customInputs.personality = ''">
+            {{ item }}
+          </div>
+        </div>
+        <div class="custom-input-group">
+          <input type="text" v-model="customInputs.personality" placeholder="自定义性格 (例如: 表面高冷实则极度闷骚...)" @input="settings.personality = customInputs.personality">
+        </div>
+      </div>
+
+      <!-- 页面 3：故事 (原Step 2) -->
+      <div class="section" v-if="currentStep === 3">
+        <div class="section-title">Step 3: 故事背景/桥段</div>
         <div class="tag-grid">
           <div v-for="item in db.stories" :key="item"
                class="tag" :class="{ selected: settings.story === item }"
@@ -293,9 +252,9 @@
         </div>
       </div>
 
-      <!-- 页面 3：服装 (支持多选) -->
-      <div class="section" v-if="currentStep === 3">
-        <div class="section-title">Step 3: 服装与配饰 (可多选)</div>
+      <!-- 页面 4：服装 (原Step 3) -->
+      <div class="section" v-if="currentStep === 4">
+        <div class="section-title">Step 4: 服装与配饰 (可多选)</div>
         <div class="tag-grid">
           <div v-for="item in db.clothing" :key="item"
                class="tag" :class="{ selected: settings.clothing.includes(item) }"
@@ -309,9 +268,9 @@
         </div>
       </div>
 
-      <!-- 页面 4：张数与规格 -->
-      <div class="section" v-if="currentStep === 4">
-        <div class="section-title">Step 4: 规格与张数</div>
+      <!-- 页面 5：张数与规格 (原Step 4) -->
+      <div class="section" v-if="currentStep === 5">
+        <div class="section-title">Step 5: 规格与张数</div>
         <div class="tag-grid">
           <div v-for="item in db.pages" :key="item"
                class="tag" :class="{ selected: settings.pages === item }"
@@ -324,13 +283,17 @@
         </div>
       </div>
 
-      <!-- 页面 5：确认 -->
-      <div class="section" v-if="currentStep === 5">
-        <div class="section-title">Step 5: 最终确认</div>
+      <!-- 页面 6：确认 (原Step 5) -->
+      <div class="section" v-if="currentStep === 6">
+        <div class="section-title">Step 6: 最终确认</div>
 
         <div class="summary-line">
           <span class="summary-label">核心角色</span>
           <span class="summary-value">{{ settings.role || '未指定' }}</span>
+        </div>
+        <div class="summary-line">
+          <span class="summary-label">人物性格</span>
+          <span class="summary-value">{{ settings.personality || '未指定' }}</span>
         </div>
         <div class="summary-line">
           <span class="summary-label">故事桥段</span>
@@ -353,8 +316,8 @@
       <!-- 底部控制按钮 -->
       <div class="footer-actions">
         <button class="btn btn-secondary" @click="prevStep" :disabled="currentStep === 1">返回</button>
-        <button class="btn btn-primary" @click="nextStep" v-if="currentStep < 5" :disabled="!isStepComplete(currentStep)">确认并下一步</button>
-        <button class="btn btn-primary" @click="submit" v-if="currentStep === 5">开始生成配置</button>
+        <button class="btn btn-primary" @click="nextStep" v-if="currentStep < 6" :disabled="!isStepComplete(currentStep)">确认并下一步</button>
+        <button class="btn btn-primary" @click="submit" v-if="currentStep === 6">开始生成配置</button>
       </div>
 
     </div>
@@ -370,13 +333,16 @@
 
       const db = {
         roles: ['青梅竹马', '冷酷女上司', '战斗修女', '魔法少女', '魅魔', '人妻邻居', '无口三无少女', '女仆', '黑帮大小姐', '同班辣妹', '傲娇学妹', '精灵剑士'],
+        // 🌟 新增的性格词库
+        personalities: ['傲娇毒舌', '病娇且占有欲强', '高冷禁欲', '温柔包容', '极度弱气', '腹黑S属性', '元气且主动', '缺乏常识的三无', '外表清纯实则痴女', '死要面子'],
         stories: ['催眠常识修改', '隐秘的办公室恋情', '时间停止', '被发现秘密的威胁', '异世界转生开后宫', '密室逃脱惩罚', '合租室友的意外', '体育仓库的补习', '败北路线'],
         clothing: ['水手服', '死库水', '连裤黑丝', '女仆装', '护士服', '兔女郎', '开裆紧身衣', '微透白衬衫', '项圈', '贞操带', '体操服', 'JK制服', '比基尼铠甲'],
         pages: ['单张精美CG', '4格小剧场', '8页短篇', '16页标准本', '32页全彩大长篇', '动态互动分镜']
       }
 
-      const settings = reactive({ role: '', story: '', clothing: [], pages: '' })
-      const customInputs = reactive({ role: '', story: '', clothingItem: '', pages: '' })
+      // 🌟 数据中加入 personality 字段
+      const settings = reactive({ role: '', personality: '', story: '', clothing: [], pages: '' })
+      const customInputs = reactive({ role: '', personality: '', story: '', clothingItem: '', pages: '' })
 
       const toggleClothing = (item) => {
         const index = settings.clothing.indexOf(item)
@@ -390,25 +356,31 @@
         customInputs.clothingItem = ''
       }
 
+      // 🌟 修改步骤判断逻辑
       const isStepComplete = (step) => {
         if (step === 1) return !!settings.role
-        if (step === 2) return !!settings.story
-        if (step === 4) return !!settings.pages
+        if (step === 2) return !!settings.personality
+        if (step === 3) return !!settings.story
+        if (step === 5) return !!settings.pages
         return true
       }
 
-      const nextStep = () => { if (currentStep.value < 5) currentStep.value++ }
+      // 🌟 修改总页数临界点
+      const nextStep = () => { if (currentStep.value < 6) currentStep.value++ }
       const prevStep = () => { if (currentStep.value > 1) currentStep.value-- }
 
       const submit = () => {
         const finalRole = customInputs.role.trim() || settings.role || '未指定';
+        const finalPersonality = customInputs.personality.trim() || settings.personality || '未指定';
         const finalStory = customInputs.story.trim() || settings.story || '未指定';
         const finalClothing = settings.clothing.length > 0 ? settings.clothing.join(', ') : '全裸/未指定';
         const finalPages = customInputs.pages.trim() || settings.pages || '未指定';
 
+        // 🌟 Prompt 文本中加入性格
         const promptText =
 `H漫分镜生成配置：
 【核心角色】: ${finalRole}
+【人物性格】: ${finalPersonality}
 【故事桥段】: ${finalStory}
 【服装设定】: ${finalClothing}
 【规格篇幅】: ${finalPages}
